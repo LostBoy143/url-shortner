@@ -1,6 +1,7 @@
 const express = require("express");
 const {
   handleGenerateUrl,
+  handleRedirectUrl,
 } = require("../controllers/url.controller.js");
 const router = express.Router();
 

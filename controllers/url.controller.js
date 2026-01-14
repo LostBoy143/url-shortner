@@ -37,7 +37,7 @@ const handleGenerateUrl = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "tiny url is created",
-      shortUrl: `http://localhost:5000/${shortId}`,
+      shortUrl: `http://localhost:8000/${shortId}`,
     });
   } catch (error) {
     console.error("Error: ", error);
@@ -60,10 +60,22 @@ const handleRedirectUrl = async (req, res) => {
       });
     }
     const shortId = req.params.shortId;
-    const redirect = await urlModel.findOne({
-      shortId: shortId,
-    });
+    const redirect =
+      await urlModel.findOneAndUpdate(
+        {
+          shortId: shortId,
+        },
+        {
+          $push: {
+            visitHistory: {
+              timestamp: new Date(),
+            },
+          },
+        },
+        { new: true }
+      );
     const url = redirect.redirectUrl;
+    res.redirect(url);
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).json({
@@ -74,4 +86,7 @@ const handleRedirectUrl = async (req, res) => {
   }
 };
 
-module.exports = { handleGenerateUrl };
+module.exports = {
+  handleGenerateUrl,
+  handleRedirectUrl,
+};
